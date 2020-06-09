@@ -23,7 +23,7 @@ app_dash = dash.Dash(__name__, server=app, external_stylesheets=external_stylesh
 
 @app.route('/activity/map')
 def map():
-    return render_template('map.html')
+    return render_template('Map_Viz.html')
 
 @app.route('/')
 def activity():
