@@ -37,6 +37,13 @@ Our recent implementation : [http://ie481-final2.herokuapp.com/](http://ie481-fi
 
 ---
 
+### Screenshot
+
+![capture](https://user-images.githubusercontent.com/43778641/84250973-abb4c500-ab47-11ea-8f19-420adfb598d0.JPG)
+![capture_map](https://user-images.githubusercontent.com/43778641/84251000-b53e2d00-ab47-11ea-9989-49d712ba0e46.JPG)
+
+---
+
 ### Requirements
 
 click==7.1.1
@@ -82,10 +89,3 @@ Werkzeug==1.0.1
 xlrd==1.2.0
 
 gunicorn==19.4.5.
-
----
-
-### Screenshot
-
-![capture](https://user-images.githubusercontent.com/43778641/84250973-abb4c500-ab47-11ea-8f19-420adfb598d0.JPG)
-![capture_map](https://user-images.githubusercontent.com/43778641/84251000-b53e2d00-ab47-11ea-9989-49d712ba0e46.JPG)
