@@ -46,6 +46,8 @@ Our recent implementation : [http://ie481-final2.herokuapp.com/](http://ie481-fi
 
 ### Requirements
 
+Python 3.7.4
+
 click==7.1.1
 
 dash==1.11.0
