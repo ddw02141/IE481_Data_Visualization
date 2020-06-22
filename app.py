@@ -33,20 +33,25 @@ app_dash = dash.Dash(__name__, server=app, external_stylesheets=external_stylesh
 @app.route('/')
 def activity():
     return flask.redirect('/activity')
-acts = ["Not Classified", "SNS", "Video", "Exercise", "Sleep"]
+df = pd.read_csv("grouped_dataset.csv")
+
+remove_columns = ['day_of_week', 'time_sort', 'new_time_group', 'Unnamed: 0', 'Unnamed: 0.1','longitude', 'latitude']
+acts = [col for col in list(df.columns) if col not in remove_columns]
+print(acts)
 x = [cos(radians((x-1)*360/len(acts)+90)) for x in range(len(acts))]
 y = [sin(radians((x-1)*360/len(acts)+90)) for x in range(len(acts))]
-
+random_rgbs = [(random.randint(0,255), random.randint(0,255), random.randint(0,255)) for _ in range(len(acts))]
+colors = [f'rgb({a}, {b}, {c})' for a,b,c in random_rgbs] 
+# marker_size = [random.randint(0,200) for _ in range(5)]
 day_of_week = {0:"Mon", 1:"Tue", 2:"Wed", 3:"Thr", 4:"Fri", 5:"Sat", 6:"Sun"}
 
-df = pd.read_csv("grouped_dataset.csv")
+
 idx = 0
 
 
 # ts = pd.to_datetime(1557273676330, unit='ms')
 now = df.loc[idx, "new_time_group"] + ", " + day_of_week[df.loc[idx, "day_of_week"]]
 
-# marker_size = [random.randint(0,200) for _ in range(5)]
 
 marker_size = [df.loc[idx, act] for act in acts]
 acts_with_number = []
@@ -92,14 +97,13 @@ app_dash.layout = html.Div(className="wrapper",
                     y = y,
                     mode = 'markers+text',
                     marker = dict(
-                    	color=['rgb(93, 164, 214)', 'rgb(255, 144, 14)', 'rgb(44, 160, 101)', 
-                    			'rgb(255, 65, 54)', 'rgb(64, 255, 255)', 'rgb(0, 255, 0)']
-           					),
+                        color=colors,
+                    ),
                     marker_size = marker_size,
                  	text = acts_with_number,
                  	textfont=dict(
 				        # family="sans serif",
-				        size=30,
+				        size= 30 - len(acts),
 				        # color="crimson"
 			    	)
 
@@ -158,7 +162,7 @@ app_dash.layout = html.Div(className="wrapper",
 
 ])
 
-htmls = ["map.html", "easy_html.html"]
+# htmls = os.listdir('map_viz')
 html_idx = 0
 Timer_on = False
 
@@ -182,14 +186,12 @@ def click_button(n_clicks, input_value):
 @app_dash.callback(output=Output('htmlFile', 'src'),
               inputs=[Input('html_timer', 'n_intervals')])
 def update_graph(n_clicks):
-    # print("html_timer")
-    global html_idx
     global prev_html
-    html_idx += 1
-    html_idx %= 2
-    print(htmls[html_idx])
+
     if prev_html==None or Timer_on:
-        prev_html = htmls[html_idx]
+        prev_html = f"map_viz/map{idx}.html"
+
+    
     return app_dash.get_asset_url(prev_html)
 
 @app_dash.callback(output=Output('main_time', 'children'),
@@ -201,6 +203,7 @@ def update_graph(n_clicks):
     if Timer_on:
         idx += 1
         idx %= 168
+
     now = df.loc[idx, "new_time_group"] + ", " + day_of_week[df.loc[idx, "day_of_week"]]
     if prev_time==None or Timer_on:
         prev_time = now
@@ -215,9 +218,13 @@ def update_graph(n_clicks):
     global y
     global now
     global prev_graph
+    global color
 
     # x = [cos(radians((x-1)*360/len(acts)+18)) for x in range(len(acts))]
     # y = [sin(radians((x-1)*360/len(acts)+90)) for x in range(len(acts))]
+    print("*******************************")
+    print(f"idx : {idx}")
+    print("*******************************")
     marker_size = [df.loc[idx, act] for act in acts]
     acts_with_number = []
     for i in range(len(marker_size)):
@@ -230,14 +237,13 @@ def update_graph(n_clicks):
                         y = y,
                         mode = 'markers+text',
                         marker = dict(
-                        	color=['rgb(93, 164, 214)', 'rgb(255, 144, 14)', 'rgb(44, 160, 101)', 
-                        			'rgb(255, 65, 54)', 'rgb(64, 255, 255)', 'rgb(0, 255, 0)']
-               					),
+                        	color=colors,
+               			),
                         marker_size = marker_size,
                      	text = acts_with_number,
                      	textfont=dict(
     				        # family="sans serif",
-    				        size=30,
+    				        size = 30 - len(acts),
     				        # color=font_color,
     			    	)
 
