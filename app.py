@@ -37,11 +37,13 @@ df = pd.read_csv("grouped_dataset.csv")
 
 remove_columns = ['day_of_week', 'time_sort', 'new_time_group', 'Unnamed: 0', 'Unnamed: 0.1','longitude', 'latitude']
 acts = [col for col in list(df.columns) if col not in remove_columns]
-print(acts)
+# print(acts)
+# ['On_the_Move', 'Sleep', 'Study', 'Hard_Exercise', 'Facebook', 'Kakaotalk', 'Instagram', 'Video', 'Not Classified']
 x = [cos(radians((x-1)*360/len(acts)+90)) for x in range(len(acts))]
 y = [sin(radians((x-1)*360/len(acts)+90)) for x in range(len(acts))]
-random_rgbs = [(random.randint(0,255), random.randint(0,255), random.randint(0,255)) for _ in range(len(acts))]
-colors = [f'rgb({a}, {b}, {c})' for a,b,c in random_rgbs] 
+# rgbs = [(random.randint(0,255), random.randint(0,255), random.randint(0,255)) for _ in range(len(acts))]
+rgbs = [(0,0,153), (0,153,153), (102,204,0), (255,102,255), (153,204,255), (255,255,0),(204,0,204),(255,0,0),(128,128,128)]
+colors = [f'rgb({a}, {b}, {c})' for a,b,c in rgbs] 
 # marker_size = [random.randint(0,200) for _ in range(5)]
 day_of_week = {0:"Mon", 1:"Tue", 2:"Wed", 3:"Thr", 4:"Fri", 5:"Sat", 6:"Sun"}
 
@@ -64,16 +66,46 @@ marker_size = [ms*4 + 10 for ms in marker_size]
 
 app_dash.layout = html.Div(className="wrapper",
     children=[
-        html.H1(children=[
-                'Daily life of KAIST people'
-            ],
-            style={'text-align':'center'}
+        html.H1(className="title",
+                children= ['KAIST people\'s',           
+                html.Img(className="img", src=app_dash.get_asset_url("daily_life.jpg")),
+                ]
         ),
+        
 
         html.Div(id="time", 
             children=[
                 dcc.Interval(id='time_timer', interval=INTERVAL),
-                html.H2(id='main_time', children=''),
+                html.Div(id='main_time', 
+                    children=[
+                        # dcc.Dropdown(
+                        #     id='hour_dropdwon',
+                        #     options = [
+                        #         {'label':'00', 'value': '0'},
+                        #         {'label':'01', 'value': '1'},
+                        #         {'label':'02', 'value': '2'},
+
+                        #     ],
+                        #     value='0',
+                        # ),
+
+                        # html.H2(": 00 : 00, "),
+                        
+                        # dcc.Dropdown(
+                        #     id='dayofweek_dropdwon',
+                        #     options = [
+                        #         {'label':'Mon', 'value': 'Mon'},
+                        #         {'label':'Tue', 'value': 'Tue'},
+                        #         {'label':'Wed', 'value': 'Wed'},
+
+                        #     ],
+                        #     value='Mon',
+                        # ),
+
+
+                    ]
+                ),
+
             ],
             style={'text-align':'center'}
         ),
@@ -85,82 +117,85 @@ app_dash.layout = html.Div(className="wrapper",
         ),
         
     
-	html.Div(
-    className="box",
-    children=[
-        dcc.Interval(id='timer', interval=INTERVAL),
-        dcc.Graph(
-            id='example-graph',
-            figure={'data' : [
-                 go.Scatter(
-                    x = x,
-                    y = y,
-                    mode = 'markers+text',
-                    marker = dict(
-                        color=colors,
-                    ),
-                    marker_size = marker_size,
-                 	text = acts_with_number,
-                 	textfont=dict(
-				        # family="sans serif",
-				        size= 30 - len(acts),
-				        # color="crimson"
-			    	)
-
-            	),
-            ],
-            
-            'layout' : go.Layout(
-            	showlegend = False,
-                title = "Activity Cluser",
-                titlefont=dict(
-			        family="Courier New, monospace",
-			        size=40,
-			        color="#7f7f7f"
-			    ),
-                width = inf,
-                height = 1000,
-                xaxis = dict(
-                	range = [-2, 2],
-                	showgrid = False,
-                	visible = False,
-                	zeroline = False
-                ),
-                yaxis = dict(
-                	range = [-2, 2],
-                	showgrid = False,
-                	visible = False,
-                	zeroline = False
-                )
-            )
-        }
-            
-        ),
-    ]),
-
-
-
-
-    html.Div(
-        # style={'border': 'none', 'width': '50%', 'height': 600,'white-space': 'pre-wrap'},
-        # style={'position':'relative', 'border': 'none', 'width': '50%', 'height': '100%','white-space': 'pre-wrap'},
-        className="box2",
+    	html.Div(
+        className="box",
         children=[
-            # html.H1(children='Map', id='second', style={'text-align':'center'}),
-            dcc.Interval(id='html_timer', interval=INTERVAL),
-            # html.Embed(id="htmlFile", src=app_dash.get_asset_url("map.html"), style={'text-align':'center', 'width':'100%', 'height': 1000})
-            html.Iframe(id="htmlFile", src=app_dash.get_asset_url("map.html"), style={'text-align':'center', 'width':'100%', 'height': 1000})
+            dcc.Interval(id='timer', interval=INTERVAL),
+            dcc.Graph(
+                id='example-graph',
+                figure={'data' : [
+                     go.Scatter(
+                        x = x,
+                        y = y,
+                        mode = 'markers+text',
+                        marker = dict(
+                            color=colors,
+                        ),
+                        marker_size = marker_size,
+                     	text = acts_with_number,
+                     	textfont=dict(
+    				        # family="sans serif",
+    				        size= 30 - len(acts),
+    				        # color="#ffffff"
+    			    	)
 
-        ]
+                	),
+                ],
+                
+                'layout' : go.Layout(
+                	showlegend = False,
+                    title = "Activity Cluser",
+                    titlefont=dict(
+    			        family="Courier New, monospace",
+    			        size=40,
+    			        color="#7f7f7f"
+    			    ),
+                    width = inf,
+                    height = 1000,
+                    xaxis = dict(
+                    	range = [-2, 2],
+                    	showgrid = False,
+                    	visible = False,
+                    	zeroline = False
+                    ),
+                    yaxis = dict(
+                    	range = [-2, 2],
+                    	showgrid = False,
+                    	visible = False,
+                    	zeroline = False
+                    ),
+                    # paper_bgcolor = 'rgb(128,128,128)',
+                    # plot_bgcolor = 'rgb(128,128,128)',
+                )
+            }
+                
+            ),
+        ]),
 
-    ),
+
+
+
+        html.Div(
+            # style={'border': 'none', 'width': '50%', 'height': 600,'white-space': 'pre-wrap'},
+            # style={'position':'relative', 'border': 'none', 'width': '50%', 'height': '100%','white-space': 'pre-wrap'},
+            className="box2",
+            children=[
+                # html.H1(children='Map', id='second', style={'text-align':'center'}),
+                dcc.Interval(id='html_timer', interval=INTERVAL),
+                # html.Embed(id="htmlFile", src=app_dash.get_asset_url("map.html"), style={'text-align':'center', 'width':'100%', 'height': 1000})
+                html.Iframe(id="htmlFile", src=app_dash.get_asset_url("map.html"), style={'text-align':'center', 'width':'100%', 'height': 1000})
+
+            ]
+
+        ),
     # html.A(html.Button('Location Cluster', className='three columns'),
     # href='map'),
 	
 	# ])
 	# ])
 
-])
+    ]
+)
 
 # htmls = os.listdir('map_viz')
 html_idx = 0
@@ -194,6 +229,8 @@ def update_graph(n_clicks):
     
     return app_dash.get_asset_url(prev_html)
 
+# output=[Output('hour_dropdwon', 'value'),
+#         Output('dayofweek_dropdwon', 'value')]
 @app_dash.callback(output=Output('main_time', 'children'),
               inputs=[Input('time_timer', 'n_intervals')])
 def update_graph(n_clicks):
@@ -207,6 +244,7 @@ def update_graph(n_clicks):
     now = df.loc[idx, "new_time_group"] + ", " + day_of_week[df.loc[idx, "day_of_week"]]
     if prev_time==None or Timer_on:
         prev_time = now
+        # prev_time = (df.loc[idx, "new_time_group"].hour, day_of_week[df.loc[idx, "day_of_week"]])
     return prev_time
 
 @app_dash.callback(output=Output('example-graph', 'figure'),
@@ -232,49 +270,50 @@ def update_graph(n_clicks):
     marker_size = [ms*4 + 10 for ms in marker_size]
     if prev_graph==None or Timer_on:
         prev_graph = {'data' : [
-                     go.Scatter(
-                        x = x,
-                        y = y,
-                        mode = 'markers+text',
-                        marker = dict(
-                        	color=colors,
-               			),
-                        marker_size = marker_size,
-                     	text = acts_with_number,
-                     	textfont=dict(
-    				        # family="sans serif",
-    				        size = 30 - len(acts),
-    				        # color=font_color,
-    			    	)
+                 go.Scatter(
+                    x = x,
+                    y = y,
+                    mode = 'markers+text',
+                    marker = dict(
+                        color=colors,
+                    ),
+                    marker_size = marker_size,
+                    text = acts_with_number,
+                    textfont=dict(
+                        # family="sans serif",
+                        size= 30 - len(acts),
+                        # color="#ffffff"
+                    )
 
-                	),
-                ],
-                
-                'layout' : go.Layout(
-                	showlegend = False,
-                    title = "Activity Cluster",
-                    titlefont=dict(
-    			        family="Courier New, monospace",
-    			        size=40,
-    			        color="#7f7f7f"
-    			    ),
-                    width = inf,
-                    height = 1000,
-                    xaxis = dict(
-                    	range = [-2, 2],
-                    	showgrid = False,
-                    	visible = False,
-                    	zeroline = False
-                    ),
-                    yaxis = dict(
-                    	range = [-2, 2],
-                    	showgrid = False,
-                    	visible = False,
-                    	zeroline = False
-                    ),
-                    # plot_bgcolor=plot_bgcolor,
-                )
-            }
+                ),
+            ],
+            
+            'layout' : go.Layout(
+                showlegend = False,
+                title = "Activity Cluser",
+                titlefont=dict(
+                    family="Courier New, monospace",
+                    size=40,
+                    color="#7f7f7f"
+                ),
+                width = inf,
+                height = 1000,
+                xaxis = dict(
+                    range = [-2, 2],
+                    showgrid = False,
+                    visible = False,
+                    zeroline = False
+                ),
+                yaxis = dict(
+                    range = [-2, 2],
+                    showgrid = False,
+                    visible = False,
+                    zeroline = False
+                ),
+                # paper_bgcolor = 'rgb(128,128,128)',
+                # plot_bgcolor = 'rgb(128,128,128)',
+            )
+        }
     return prev_graph
 if __name__ == '__main__':
     app.run(debug=True)
