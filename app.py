@@ -13,6 +13,12 @@ import os
 from math import *
 import pandas as pd
 import plotly.express as px
+
+from sqlite3 import dbapi2 as sqlite3
+from hashlib import md5
+from contextlib import closing
+from werkzeug.security import generate_password_hash, check_password_hash
+
 # import dash_dangerously_set_inner_html
 
 INTERVAL = 3000
@@ -26,17 +32,116 @@ prev_hour = 0
 app = Flask(__name__, template_folder = './')
 app.secret_key = "ie481-programming code"
 
+def connect_db():
+    """Returns a new connection to the database."""
+    return sqlite3.connect('userdb')
+
+
+def init_db():
+    """Creates the database tables."""
+    with closing(connect_db()) as db:
+        with app.open_resource('schema.sql', mode='r') as f:
+            db.cursor().executescript(f.read())
+        # db.commit()
+        db.execute('''insert into user (
+                    username, email, pw_hash) values (?, ?, ?)''',
+                    ['kaist', '',
+                     generate_password_hash('123456')])
+        db.commit()
+
+@app.before_request
+def before_request():
+    """Make sure we are connected to the database each request and look
+    up the current user so that we know he's there.
+    """
+    g.db = connect_db()
+    g.user = None
+    if 'user_id' in session:
+        g.user = query_db('select * from user where user_id = ?',
+                          [session['user_id']], one=True)
+
+
+@app.teardown_request
+def teardown_request(exception):
+    """Closes the database again at the end of the request."""
+    if hasattr(g, 'db'):
+        g.db.close()
+
+
+def get_user_id(username):
+    """Convenience method to look up the id for a username."""
+    rv = g.db.execute('select user_id from user where username = ?',
+                       [username]).fetchone()
+    return rv[0] if rv else None
+
+
+def query_db(query, args=(), one=False):
+    """Queries the database and returns a list of dictionaries."""
+    cur = g.db.execute(query, args)
+    rv = [dict((cur.description[idx][0], value)
+               for idx, value in enumerate(row)) for row in cur.fetchall()]
+    return (rv[0] if rv else None) if one else rv
+
+
+@app.route('/')
+def loginOrhome():
+    if not g.user:
+        return redirect(url_for('login'))
+    # return render_template('home.html', username=g.user['username'])
+    return redirect(url_for('/homepage/'))
+    # return redirect(url_for('login'))
+
+@app.route('/homepage')
+def home():
+    return redirect('/homepage')
+    # return render_template('home.html', username=g.user['username'])
+# @app.route('/register')
+# def register():
+#     """Displays the latest messages of all users."""
+#     return render_template('register.html')
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if g.user:
+        # return redirect(url_for('home'))
+        return redirect('/homepage/')
+    error = None
+    if request.method == 'POST':
+        user = query_db('''select * from user where
+            username = ?''', [request.form['username']], one=True)
+        if user is None:
+            error = 'Invalid username'
+        elif not check_password_hash(user['pw_hash'],
+                                     request.form['password']):
+            error = 'Invalid password'
+        else:
+            flash('You were logged in')
+            session['user_id'] = user['user_id']
+            # return redirect(url_for('home'))
+            return redirect('/homepage/')
+
+    return render_template('/assets/login.html', error=error)
+
+
+@app.route('/logout')
+def logout():
+    """Logs the user out."""
+    flash('You were logged out')
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
+
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app_dash = dash.Dash(__name__, server=app, external_stylesheets=external_stylesheets, url_base_pathname='/activity/')
+app_dash = dash.Dash(__name__, server=app, external_stylesheets=external_stylesheets, url_base_pathname='/homepage/')
 
 # @app.route('/activity/map')
 # def map():
 #     return render_template('Map_Viz.html')
 
-@app.route('/')
-def activity():
-    return flask.redirect('/activity')
+# @app.route('/')
+# def activity():
+#     return flask.redirect('/activity')
 df = pd.read_csv("grouped_dataset.csv")
 
 remove_columns = ['day_of_week', 'time_sort', 'new_time_group', 'Unnamed: 0', 'Unnamed: 0.1','longitude', 'latitude']
@@ -133,6 +238,13 @@ app_dash.layout = html.Div(className="wrapper",
                 ]
             ),
 
+            html.Div(id="logout-div",
+                # children = [html.A(children="sign out", href=app_dash.get_asset_url("login.html"))]
+                children = [html.A(className="logout", children="sign out", id='logout', href='')]
+            
+
+            ),
+
             html.Div(
                 children=[
                     html.Button(className="but", children=['Start Simulation'], id='start_timer'),
@@ -141,6 +253,7 @@ app_dash.layout = html.Div(className="wrapper",
             html.Div(className="hidden", children='', id="hidden-div", ),
             html.Div(className="hidden", children='', id="hidden-div2", ),
             html.Div(className="hidden", children='', id="hidden-div3", ),
+            html.Div(className="hidden", children='', id="hidden-div4", ),
 
             ]
         ),
@@ -361,4 +474,5 @@ def click_go_button(n_clicks):
     return ''
 
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)

@@ -1,0 +1,69 @@
+
+
+<!doctype html>
+<style>
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+</style>
+<title>The Daily Life of KAIST people</title>
+<head>
+</head>
+<!-- <link rel=stylesheet type=text/css href="{{url_for('static',filename='style.css')}}"> -->
+
+<img src="https://user-images.githubusercontent.com/43778641/85327503-07992980-b50a-11ea-936f-cb6d11a79a76.png" class="center">
+<h1 style="text-align: center;" > Welcome to Login Page </h1>
+<!-- <div class=page>
+  <h1>Practice</h1>
+  {% with flashes = get_flashed_messages() %}
+    {% if flashes %}
+      <ul class=flashes>
+      {% for message in flashes %}
+        <li>{{ message }}
+      {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %} -->
+  <div class=body>
+    <!-- {% block body %} -->
+      <!-- <h2>Sign Up</h2>
+      {% if error %}
+      <div class=error><strong>Error:</strong> {{ error }}</div>
+      {% endif %}
+      
+      <form action="" method=post>
+        <dl>
+          <dt>Username:
+          <dd><input type=text name=username size=30 value="{{ request.form.username }}">
+          <dt>Password:
+          <dd><input type=password name=password size=30>
+        </dl>
+        <div class=actions><input type=submit value="Sign Up"></div>
+      </form>
+       -->      
+    <!-- {% endblock %} -->
+    <!-- <h2 style="text-align: center;">Sign In</h2> -->
+  {% if error %}
+     <div class=error><strong>Error:</strong> {{ error }}
+     </div>
+  {% endif %}
+  <form action="" method=post>
+    <dl>
+      <dt style="text-align: center;">Username:
+      <dd style="text-align: center;"><input type=text name=username size=30 value="{{request.form.username}}">
+      <dt style="text-align: center;">Password:
+      <dd style="text-align: center;"><input type=password name=password size=30>
+    </dl>
+    <div class=actions style="text-align: center;"><input type=submit value="Sign In"></div>
+  </form>
+  
+  </div>
+  <!-- <div class=footer>
+    A Flask Application
+  </div> -->
+</div>
+
+
