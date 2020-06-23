@@ -39,7 +39,11 @@ Our recent implementation : [http://ie481-final2.herokuapp.com/](http://ie481-fi
 
 ### Screenshot
 
+Login Page
+
 ![login](https://user-images.githubusercontent.com/43778641/85352334-a8a2d700-b540-11ea-8420-985da4992cbf.JPG)
+
+Main Page
 
 ![homepage](https://user-images.githubusercontent.com/43778641/85352338-ae98b800-b540-11ea-9b75-36c8cec999de.JPG)
 
