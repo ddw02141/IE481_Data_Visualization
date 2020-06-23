@@ -31,7 +31,7 @@ Our recent implementation : [http://ie481-final2.herokuapp.com/](http://ie481-fi
 
 * Map_visualization.ipynb - code for making map visualizatoin
 
-* Map_Viz.html - map visualization code which is used in our page
+* assets/map{}.html - map visualization code which is used in our page
 
 * app.py - Used to run both Flask and Dash server
 
@@ -39,8 +39,9 @@ Our recent implementation : [http://ie481-final2.herokuapp.com/](http://ie481-fi
 
 ### Screenshot
 
-![capture](https://user-images.githubusercontent.com/43778641/84250973-abb4c500-ab47-11ea-8f19-420adfb598d0.JPG)
-![capture_map](https://user-images.githubusercontent.com/43778641/84251000-b53e2d00-ab47-11ea-9989-49d712ba0e46.JPG)
+![login](https://user-images.githubusercontent.com/43778641/85352334-a8a2d700-b540-11ea-8420-985da4992cbf.JPG)
+
+![homepage](https://user-images.githubusercontent.com/43778641/85352338-ae98b800-b540-11ea-9b75-36c8cec999de.JPG)
 
 ---
 
