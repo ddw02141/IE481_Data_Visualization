@@ -19,7 +19,7 @@ We use ABC+MSBAND data - which is is a data fronm KAIST people's smartphone and 
 python app.py
 ```
 
-Our recent implementation : [http://ie481-final2.herokuapp.com/](http://ie481-final2.herokuapp.com/)
+Our recent implementation : [http://ie481-group2.herokuapp.com/](http://ie481-group2.herokuapp.com/)
 
 ---
 
